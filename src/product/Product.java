@@ -1,35 +1,35 @@
 package product;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 public abstract class Product {
+
+
 
     private int productID;
     private int weight;
     private int barCode;
     private BigDecimal price;
-
+    private String name;
+    private Category category;
+    private ArrayList<Triple> quantity;
 
     public Product(int productID)
     {
         this.productID = productID;
     }
 
-    public Product(int productID, int weight, int barCode, BigDecimal price) {
+    public Product(int productID, int weight, int barCode, BigDecimal price, String name, Category category, ArrayList<Triple> quantity) {
         this.productID = productID;
-        this.weight = weight;
+        setWeight(weight);
+         setPrice(price);
         this.barCode = barCode;
         this.price = price;
+        this.name = name;
+        this.category = category;
+        this.quantity = quantity;
     }
-
-    public int getBarCode() {
-        return barCode;
-    }
-
-    public void setBarCode(int barCode) {
-        this.barCode = barCode;
-    }
-
 
     public int getWeight() {
         return weight;
@@ -49,6 +49,23 @@ public abstract class Product {
         if(price.signum() != 1)
             throw new IllegalArgumentException("Price must be greater than zero");
         this.price = price;
+    }
+
+    public int getProductID() {
+        return productID;
+    }
+
+    public int getBarCode() {
+        return barCode;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+
+    public Category getCategory() {
+        return category;
     }
 
     @Override

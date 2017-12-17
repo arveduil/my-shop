@@ -1,20 +1,28 @@
 package core;
 
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Callback;
+import javafx.util.StringConverter;
+import product.*;
 
 import javax.swing.*;
+import java.awt.*;
+import java.math.BigDecimal;
 
 public class Main extends Application {
 
@@ -27,22 +35,14 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+
+        ShopModel model = new ShopModel();
+        ShopView view = new ShopView();
+        ShopController  controller = new ShopController(model, view);
+
+        scene = view.PrepareScene(controller);
         window = primaryStage;
 
-        GridPane grid = new GridPane();
-        grid.setPadding(new Insets(10, 10, 10, 10));
-        grid.setVgap(8);
-        grid.setHgap(10);
-
-        Button buyButton = new Button("Buy");
-
-        GridPane.setConstraints(buyButton, 0 , 0 );
-
-        grid.getChildren().addAll(buyButton);
-
-        scene = new Scene(grid, 600, 300);
-
-        //Display scene 1 at first
         window.setScene(scene);
         window.setTitle("Title Here");
         window.show();

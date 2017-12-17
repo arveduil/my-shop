@@ -1,54 +1,20 @@
 package product;
 
-public abstract class Shoes extends Product {
+import java.math.BigDecimal;
+import java.util.ArrayList;
 
-    private int size;
+public  class Shoes extends Product {
+
     private ShoeType shoeType;
-    private  Gender gender;
+
     private String mainMaterial;
 
-    public Shoes(int productId)
-    {
-        super(productId);
-    }
 
-    public Shoes(int productId, int size, ShoeType shoeType, Gender gender, String mainMaterial ) {
-        super(productId);
-        this.size = size;
+    public Shoes(int productId, int weight, int barCode, BigDecimal price, String name,  Category category, ArrayList<Triple>  quantity, ShoeType shoeType, String mainMaterial ) {
+        super(productId, weight, barCode, price, name,  category, quantity);
         this.shoeType = shoeType;
-        this.gender = gender;
         this.mainMaterial = mainMaterial;
     }
 
-    public int getSize() {
-        return size;
-    }
 
-    public void setSize(int size) {
-        this.size = size;
-    }
-
-    public ShoeType getShoeType() {
-        return shoeType;
-    }
-
-    public void setShoeType(ShoeType shoeType) {
-        this.shoeType = shoeType;
-    }
-
-    public Gender getGender() {
-        return gender;
-    }
-
-    public void setGender(Gender gender) {
-        this.gender = gender;
-    }
-
-    public String getMainMaterial() {
-        return mainMaterial;
-    }
-
-    public void setMainMaterial(String mainMaterial) {
-        this.mainMaterial = mainMaterial;
-    }
 }
