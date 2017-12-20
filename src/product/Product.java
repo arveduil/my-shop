@@ -13,14 +13,14 @@ public abstract class Product {
     private BigDecimal price;
     private String name;
     private Category category;
-    private ArrayList<Triple> quantity;
+    private  Object quantity;
 
     public Product(int productID)
     {
         this.productID = productID;
     }
 
-    public Product(int productID, int weight, int barCode, BigDecimal price, String name, Category category, ArrayList<Triple> quantity) {
+    public Product(int productID, int weight, int barCode, BigDecimal price, String name, Category category, Object quantity) {
         this.productID = productID;
         setWeight(weight);
          setPrice(price);
@@ -81,5 +81,9 @@ public abstract class Product {
     @Override
     public int hashCode() {
         return productID;
+    }
+
+    public Object getQuantity() {
+        return quantity;
     }
 }
