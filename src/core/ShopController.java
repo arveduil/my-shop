@@ -3,6 +3,8 @@ package core;
 import javafx.collections.ObservableList;
 import product.*;
 
+import java.util.ArrayList;
+
 public class ShopController {
     private ShopView view;
     private ShopModel model;
@@ -12,44 +14,64 @@ public class ShopController {
         this.model = model;
     }
 
-    public  ObservableList<Product> getObservableListOfProducts()
-    {
-        return  model.getObservableListOfProducts();
+    public ObservableList<Product> getObservableListOfProducts() {
+        return model.getObservableListOfProducts();
     }
 
-    public   void buy(Tuple selectedTuple, String amount , Product selectedProduct){
+    public void buy(Triple selectedTriple, String amount, Product selectedProduct) {
         view.result.setText("kupuje");
         int intAmount = Integer.parseInt(amount);
-            if(selectedTuple instanceof TripleCharSize){
-                TripleCharSize tripleCharSize = new TripleCharSize(((TripleCharSize) selectedTuple).getSize(),intAmount, selectedTuple.getGender());
-                checkTransationForCharSize(tripleCharSize,selectedProduct);
-            }
-        if(selectedTuple instanceof TripleNumericSize){
-            TripleNumericSize tripleNumericSize = new TripleNumericSize(((TripleNumericSize) selectedTuple).getSize(),intAmount, selectedTuple.getGender());
+        if (selectedTriple instanceof TripleCharSize) {
+            TripleCharSize tripleCharSize = new TripleCharSize(((TripleCharSize) selectedTriple).getSize(), intAmount, selectedTriple.getGender());
+            checkTransaction(tripleCharSize, selectedProduct);
+        }
+        if (selectedTriple instanceof TripleNumericSize) {
+            TripleNumericSize tripleNumericSize = new TripleNumericSize(((TripleNumericSize) selectedTriple).getSize(), intAmount, selectedTriple.getGender());
+            checkTransaction(tripleNumericSize, selectedProduct);
+
 
         }
     }
 
-    private   void checkTransationForCharSize(TripleCharSize tripleCharSizeWantedToBuy, Product selectedProduct){
-        if(selectedProduct instanceof Trousers){
-            for (TripleCharSize t :((Trousers) selectedProduct).getQuantity()) {
-                if(t.getGender() == tripleCharSizeWantedToBuy.getGender() )
-                    if(t.getSize() == tripleCharSizeWantedToBuy.getSize())
-                        if(t.getAmmount() >= tripleCharSizeWantedToBuy.getAmmount()){
-                            t.setAmmount(t.getAmmount() - tripleCharSizeWantedToBuy.getAmmount());
-                            model.modifyProducts(selectedProduct);
-                            view.result.setText("Correct!");
-                        }
-                        else
-                            view.result.setText("Out of stock");
+    private void checkTransaction(Triple tripleTest, Product selectedProduct) {
+        ArrayList<Triple> quantitiy = (ArrayList) selectedProduct.getQuantity();
+        for (Triple t : quantitiy) {
+            if (t.getGender() == tripleTest.getGender())
+                if (t.getSize() == tripleTest.getSize())
+                    if (t.getAmmount() >= tripleTest.getAmmount()) {
+                        t.setAmmount(t.getAmmount() - tripleTest.getAmmount());
+                        view.printResult("Congretulations!\nYou have bought\n"+ tripleTest.getAmmount() +" units of \n" + selectedProduct.getName() );
+                        model.checkProducts();
+                        view.refreshListOfProductsAndDescription(this);
 
-
-            }
+                        return;
+                    }
         }
-        view.result.setText("Out of stock");
+        view.printResult("Out of stock");
+        view.refreshListOfProductsAndDescription(this);
+    }
+   public void createShirt(Shirt shirt){
+        model.addProduct(shirt);
+       view.printResult("Congretulations!\nYou created new Shirt" );
+       model.checkProducts();
+
+       view.refreshListOfProductsAndDescription(this);
+
+   }
+
+    public void createShoes(Shoes createdShoes) {
+        model.addProduct(createdShoes);
+        view.printResult("Congretulations!\nYou created new product" );
+        model.checkProducts();
+
+        view.refreshListOfProductsAndDescription(this);
     }
 
-    public void refreshWithModel(){
-        view.refreshListOfProducts(this);
+    public void createTrousers(Trousers createdTrousers) {
+        model.addProduct(createdTrousers);
+        view.printResult("Congretulations!\nYou created new product" );
+        model.checkProducts();
+
+        view.refreshListOfProductsAndDescription(this);
     }
 }

@@ -1,13 +1,13 @@
 package product;
 
-public abstract class Tuple implements Comparable<Tuple> {
+public abstract class Triple implements Comparable<Triple> {
 
 
     public int ammount;
     public Gender gender;
     private Object size;
 
-    public Tuple( Gender gender, Object size, int ammount ){
+    public Triple(Gender gender, Object size, int ammount ){
         this.ammount = ammount;
         this.gender = gender;
         this.size = size;
@@ -29,7 +29,7 @@ public abstract class Tuple implements Comparable<Tuple> {
     }
 
     @Override
-    public int compareTo(Tuple o) {
+    public int compareTo(Triple o) {
 
         if(this.getGender() != o.getGender())
             return this.getGender().compareTo(o.getGender());
@@ -37,4 +37,9 @@ public abstract class Tuple implements Comparable<Tuple> {
    //         return  this.getSize().compareTo(o.getSize());
         return ((Integer)this.getAmmount()) .compareTo((Integer) o.getAmmount());
     }
+
+    public String getStringWithoutSize() {
+        return null;
+    }
+
 }

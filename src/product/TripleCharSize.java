@@ -1,6 +1,6 @@
 package product;
 
-public class TripleCharSize extends Tuple {
+public class TripleCharSize extends Triple {
     public Size size;
 
     public TripleCharSize(Size size, int ammount, Gender gender) {
@@ -14,12 +14,17 @@ public class TripleCharSize extends Tuple {
     }
 
     @Override
-    public int compareTo(Tuple o) {
+    public int compareTo(Triple o) {
 
-        if(this.getGender() != o.getGender())
+        if (this.getGender() != o.getGender())
             return this.getGender().compareTo(o.getGender());
-        if(this.getSize() != ((TripleCharSize)o).getSize())
-            return  this.getSize().compareTo(((TripleCharSize)o).getSize());
-        return ((Integer)this.getAmmount()) .compareTo((Integer) o.getAmmount());
+        if (this.getSize() != ((TripleCharSize) o).getSize())
+            return this.getSize().compareTo(((TripleCharSize) o).getSize());
+        return ((Integer) this.getAmmount()).compareTo((Integer) o.getAmmount());
+    }
+
+
+    public  String getStringWithoutSize(){
+            return (this.getGender().toString() + " " + this.getSize().toString());
     }
 }

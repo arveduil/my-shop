@@ -28,7 +28,7 @@ public abstract class Product {
         this.price = price;
         this.name = name;
         this.category = category;
-        this.quantity = quantity;
+        setQuantity(quantity);
     }
 
     public int getWeight() {
@@ -86,4 +86,9 @@ public abstract class Product {
     public Object getQuantity() {
         return quantity;
     }
+
+    public void setQuantity(Object quantity) {
+        this.quantity = quantity;
+    }
+
 }
