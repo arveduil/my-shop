@@ -1,27 +1,26 @@
 package product;
 
 public abstract class Triple implements Comparable<Triple> {
-
-
-    public int ammount;
+    public int amount;
     public Gender gender;
     private Object size;
 
-    public Triple(Gender gender, Object size, int ammount ){
-        this.ammount = ammount;
+    public Triple(Gender gender, Object size, int amount){
+        this.amount = amount;
         this.gender = gender;
         this.size = size;
-    }
-
-    public void setAmmount(int ammount) {
-        this.ammount = ammount;
     }
 
     public Object getSize() {
         return size;
     }
-    public int getAmmount() {
-        return ammount;
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
     }
 
     public Gender getGender() {
@@ -33,12 +32,11 @@ public abstract class Triple implements Comparable<Triple> {
 
         if(this.getGender() != o.getGender())
             return this.getGender().compareTo(o.getGender());
-   //     if(this.getSize() != o.getSize())
-   //         return  this.getSize().compareTo(o.getSize());
-        return ((Integer)this.getAmmount()) .compareTo((Integer) o.getAmmount());
+
+        return ((Integer)this.getAmount()) .compareTo( o.getAmount());
     }
 
-    public String getStringWithoutSize() {
+    public String getStringWithoutAmount() {
         return null;
     }
 

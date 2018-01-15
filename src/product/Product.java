@@ -4,26 +4,18 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 
 public abstract class Product {
-
-
-
     private int productID;
     private int weight;
     private int barCode;
     private BigDecimal price;
     private String name;
     private Category category;
-    private  Object quantity;
-
-    public Product(int productID)
-    {
-        this.productID = productID;
-    }
+    private Object quantity;
 
     public Product(int productID, int weight, int barCode, BigDecimal price, String name, Category category, Object quantity) {
         this.productID = productID;
         setWeight(weight);
-         setPrice(price);
+        setPrice(price);
         this.barCode = barCode;
         this.price = price;
         this.name = name;
@@ -31,12 +23,18 @@ public abstract class Product {
         setQuantity(quantity);
     }
 
+    public void setProductID(int productID) {
+
+        if (productID > 0)
+            this.productID = productID;
+    }
+
     public int getWeight() {
         return weight;
     }
 
-    public void setWeight(int weight) {
-        if(weight < 0)
+    private void setWeight(int weight) {
+        if (weight < 0)
             throw new IllegalArgumentException("Weight must be greater than zero");
         this.weight = weight;
     }
@@ -46,7 +44,7 @@ public abstract class Product {
     }
 
     public void setPrice(BigDecimal price) {
-        if(price.signum() != 1)
+        if (price.signum() != 1)
             throw new IllegalArgumentException("Price must be greater than zero");
         this.price = price;
     }
@@ -63,9 +61,17 @@ public abstract class Product {
         return name;
     }
 
-
     public Category getCategory() {
         return category;
+    }
+
+
+    public Object getQuantity() {
+        return quantity;
+    }
+
+    private void setQuantity(Object quantity) {
+        this.quantity = quantity;
     }
 
     @Override
@@ -81,14 +87,6 @@ public abstract class Product {
     @Override
     public int hashCode() {
         return productID;
-    }
-
-    public Object getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Object quantity) {
-        this.quantity = quantity;
     }
 
 }

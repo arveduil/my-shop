@@ -8,7 +8,6 @@ public class TripleCharSize extends Triple {
         this.size = size;
     }
 
-
     public Size getSize() {
         return size;
     }
@@ -20,11 +19,10 @@ public class TripleCharSize extends Triple {
             return this.getGender().compareTo(o.getGender());
         if (this.getSize() != ((TripleCharSize) o).getSize())
             return this.getSize().compareTo(((TripleCharSize) o).getSize());
-        return ((Integer) this.getAmmount()).compareTo((Integer) o.getAmmount());
+        return ((Integer) this.getAmount()).compareTo((Integer) o.getAmount());
     }
 
-
-    public  String getStringWithoutSize(){
-            return (this.getGender().toString() + " " + this.getSize().toString());
+    public String getStringWithoutAmount() {
+        return (this.getGender().toString() + " " + this.getSize().toString());
     }
 }

@@ -26,8 +26,8 @@ import java.math.BigDecimal;
 
 public class Main extends Application {
 
-    Stage window;
-    Scene scene, scene2;
+    private Stage window;
+    private Scene scene;
 
     public static void main(String[] args) {
         launch(args);
@@ -38,13 +38,13 @@ public class Main extends Application {
 
         ShopModel model = new ShopModel();
         ShopView view = new ShopView();
-        ShopController  controller = new ShopController(model, view);
+        ShopController controller = new ShopController(model, view);
 
-        scene = view.PrepareScene(controller);
+        scene = view.prepareScene(controller);
         window = primaryStage;
 
         window.setScene(scene);
-        window.setTitle("Title Here");
+        window.setTitle("MyShop");
         window.show();
     }
 

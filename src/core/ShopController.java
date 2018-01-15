@@ -19,7 +19,14 @@ public class ShopController {
     }
 
     public void buy(Triple selectedTriple, String amount, Product selectedProduct) {
-        view.result.setText("kupuje");
+        if(selectedTriple == null){
+            view.printResult("Choose size, amount and gender");
+            return;
+        }
+        if(amount.isEmpty()){
+            view.printResult("Put amount");
+            return;
+        }
         int intAmount = Integer.parseInt(amount);
         if (selectedTriple instanceof TripleCharSize) {
             TripleCharSize tripleCharSize = new TripleCharSize(((TripleCharSize) selectedTriple).getSize(), intAmount, selectedTriple.getGender());
@@ -28,8 +35,6 @@ public class ShopController {
         if (selectedTriple instanceof TripleNumericSize) {
             TripleNumericSize tripleNumericSize = new TripleNumericSize(((TripleNumericSize) selectedTriple).getSize(), intAmount, selectedTriple.getGender());
             checkTransaction(tripleNumericSize, selectedProduct);
-
-
         }
     }
 
@@ -38,40 +43,46 @@ public class ShopController {
         for (Triple t : quantitiy) {
             if (t.getGender() == tripleTest.getGender())
                 if (t.getSize() == tripleTest.getSize())
-                    if (t.getAmmount() >= tripleTest.getAmmount()) {
-                        t.setAmmount(t.getAmmount() - tripleTest.getAmmount());
-                        view.printResult("Congretulations!\nYou have bought\n"+ tripleTest.getAmmount() +" units of \n" + selectedProduct.getName() );
+                    if (t.getAmount() >= tripleTest.getAmount()) {
+                        t.setAmount(t.getAmount() - tripleTest.getAmount());
+                        view.printResult("Congretulations! You have bought\n"+ tripleTest.getAmount() +" units of " + selectedProduct.getName() );
                         model.checkProducts();
-                        view.refreshListOfProductsAndDescription(this);
-
+                        view.refreshListOfProductsAndDescription();
                         return;
                     }
         }
         view.printResult("Out of stock");
-        view.refreshListOfProductsAndDescription(this);
+        view.refreshListOfProductsAndDescription();
     }
+
+    public void createProduct(Product product){
+        switch (product.getCategory()) {
+            case Shirts:
+                createShirt((Shirt) product);
+                break;
+            case Shoes:
+                createShoes((Shoes)product);
+                break;
+            case Trousers:
+
+                createTrousers((Trousers) product);
+                break;
+        }
+
+    }
+
    public void createShirt(Shirt shirt){
-        model.addProduct(shirt);
-       view.printResult("Congretulations!\nYou created new Shirt" );
-       model.checkProducts();
-
-       view.refreshListOfProductsAndDescription(this);
-
+       view.printResult( model.addProduct(shirt));
+       view.refreshListOfProductsAndDescription();
    }
 
     public void createShoes(Shoes createdShoes) {
-        model.addProduct(createdShoes);
-        view.printResult("Congretulations!\nYou created new product" );
-        model.checkProducts();
-
-        view.refreshListOfProductsAndDescription(this);
+        view.printResult(model.addProduct(createdShoes) );
+        view.refreshListOfProductsAndDescription();
     }
 
     public void createTrousers(Trousers createdTrousers) {
-        model.addProduct(createdTrousers);
-        view.printResult("Congretulations!\nYou created new product" );
-        model.checkProducts();
-
-        view.refreshListOfProductsAndDescription(this);
+        view.printResult(model.addProduct(createdTrousers));
+        view.refreshListOfProductsAndDescription();
     }
 }

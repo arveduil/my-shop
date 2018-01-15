@@ -15,7 +15,6 @@ public  class Shoes extends Product {
 
     private  ArrayList<TripleNumericSize> quantity;
 
-
     public Shoes(int productId, int weight, int barCode, BigDecimal price, String name, Category category, ArrayList<TripleNumericSize>  quantity, ShoeType shoeType, Material mainMaterial ) {
         super(productId, weight, barCode, price, name,  category, quantity);
         this.shoeType = shoeType;
@@ -34,6 +33,5 @@ public  class Shoes extends Product {
     public Material getMainMaterial() {
         return mainMaterial;
     }
-
 
 }

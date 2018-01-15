@@ -10,7 +10,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.TextAlignment;
-import javafx.stage.Window;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import product.*;
@@ -22,14 +21,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class ShopView {
-
-    Window window;
-    private Scene scene;
     private ShopController controller;
-
     private ComboBox<Triple> selectedPossibleTripleComboBox;
-    private ListView<Product> listView;
-    public Label result;
+    private ListView<Product> listOfProducts;
+    private Label result;
     private Label description;
     private ComboBox<Category> createProductCategoryComboBox;
     private Button createProductButton;
@@ -38,161 +33,39 @@ public class ShopView {
     private VBox centerVBox;
     private Button buyButton;
     private BorderPane borderPane;
-    private TextField chooseAmmountToBuy;
+    private TextField chooseAmountToBuy;
     private VBox topVbox;
 
-
-    public Scene PrepareScene(ShopController controller) {
+    public Scene prepareScene(ShopController controller) {
         selectedPossibleTripleComboBox = new ComboBox<Triple>();
         this.controller = controller;
-        setupTupleComboBox();
+        setupTripleComboBox();
         setupBasicViews();
-        ImageView imageView =prepareImage();
-        prepareListView(listView);
-
-        description = new Label("");
+        ImageView imageView = prepareImage();
+        prepareListView();
         prepareCreateProductFeature();
+        makeTextFieldNumeric(chooseAmountToBuy);
 
-        makeTextFieldNumeric(chooseAmmountToBuy);
-
-        buyButton.setOnAction(e -> controller.buy(selectedPossibleTripleComboBox.getSelectionModel().getSelectedItem(), chooseAmmountToBuy.getCharacters().toString(), listView.getSelectionModel().getSelectedItems().get(0)));
-        listView.getSelectionModel().selectedItemProperty().addListener((v, oldVal, newVal) -> showSelected(listView, description));
+        buyButton.setOnAction(e -> controller.buy(selectedPossibleTripleComboBox.getSelectionModel().getSelectedItem(), chooseAmountToBuy.getCharacters().toString(), listOfProducts.getSelectionModel().getSelectedItems().get(0)));
+        listOfProducts.getSelectionModel().selectedItemProperty().addListener((v, oldVal, newVal) -> showSelected(listOfProducts, description));
 
         centerVBox.getChildren().addAll(description);
         topVbox.getChildren().addAll(imageView);
-        rightVBox.getChildren().addAll(result, listView, new Label("\nChoose size: "), selectedPossibleTripleComboBox, new Label("\nChoose amount:"), chooseAmmountToBuy, buyButton);
+        rightVBox.getChildren().addAll(result, listOfProducts, new Label("Choose size: "), selectedPossibleTripleComboBox, new Label("Choose amount:"), chooseAmountToBuy, buyButton);
 
-        borderPane.setRight(rightVBox);
-        borderPane.setCenter(centerVBox);
-        borderPane.setLeft(leftVBox);
-        borderPane.setTop(topVbox);
-        scene = new Scene(borderPane, 600, 800);
-
+        setBorderPane();
+        Scene scene = new Scene(borderPane, 600, 680);
         return scene;
     }
 
-    private void setupBasicViews() {
-        result = new Label("result");
-        result.setTextAlignment(TextAlignment.JUSTIFY);
-        rightVBox = new VBox(10);
-        rightVBox.setPadding(new Insets(10, 10, 10, 10));
-        leftVBox = new VBox(10);
-        leftVBox.setPadding(new Insets(10, 10, 10, 10));
-        leftVBox.setPrefWidth(150);
-        centerVBox = new VBox(10);
-        centerVBox.setPadding(new Insets(10, 10, 10, 10));
-        topVbox = new VBox();
-        topVbox.setPadding(new Insets(10, 10, 10, 10));
-        topVbox.setAlignment(Pos.CENTER);
-        buyButton = new Button("Buy");
-        borderPane = new BorderPane();
-
-        chooseAmmountToBuy = new TextField();
-        chooseAmmountToBuy.setMaxWidth(50);
-        listView = new ListView<Product>(controller.getObservableListOfProducts());
+    public void printResult(String resultOfOperation) {
+        result.setText(resultOfOperation);
     }
 
-    private void prepareCreateProductButton() {
-        createProductButton = new Button("Create Product");
-        createProductButton.setOnAction(e -> createProduct());
+    public void refreshListOfProductsAndDescription() {
+        listOfProducts.refresh();
+        showSelected(listOfProducts, description);
     }
-
-    private void prepareCreateProductFeature() {
-        prepareCreateProductButton();
-        createProductCategoryComboBox = new ComboBox<Category>();
-        createProductCategoryComboBox.getItems().addAll(Category.values());
-        prepareCreateProductInput();
-        createProductCategoryComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-            Category selectedCategory = createProductCategoryComboBox.getValue();
-            if (oldValue != null) {
-                leftVBox.getChildren().remove(leftVBox.getChildren().size() - 1, leftVBox.getChildren().size());
-            }
-            switch (selectedCategory) {
-                case Shirts:
-                    prepareShirtsCreationViews();
-                    break;
-                case Shoes:
-                    prepareShoesCreationViews();
-                    break;
-                case Trousers:
-                    prepareTrousersCreationViews();
-                    break;
-            }
-        });
-        createProductCategoryComboBox.valueProperty().setValue(Category.Shirts);
-    }
-
-
-    private ImageView prepareImage() {
-        File file = new File("res/SportShop.png");
-        Image image = new Image(file.toURI().toString());
-        ImageView imageView = new  ImageView(image);
-        imageView.fitWidthProperty().setValue(500);
-        imageView.fitHeightProperty().setValue(80);
-        return  imageView;
-    }
-
-    private void setupTupleComboBox() {
-        selectedPossibleTripleComboBox.setConverter(new StringConverter<Triple>() {
-            @Override
-            public String toString(Triple triple) {
-                return triple == null ? "" : triple.getStringWithoutSize();
-            }
-
-            @Override
-            public Triple fromString(String string) {
-                return null;
-            }
-        });
-    }
-
-    private void makeTextFieldNumeric(TextField textField) {
-        textField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("\\d*")) {
-                textField.setText(newValue.replaceAll("[^\\d]", ""));
-            }
-        });
-    }
-
-    private void prepareListView(ListView list) {
-        list.setCellFactory(new Callback<ListView<Product>, ListCell<Product>>() {
-            @Override
-            public ListCell<Product> call(ListView<Product> p) {
-
-                final ListCell<Product> cell = new ListCell<Product>() {
-
-                    @Override
-                    protected void updateItem(Product t, boolean bln) {
-                        super.updateItem(t, bln);
-
-                        if (t != null) {
-                            setText(t.getName());
-                        } else {
-                            setText("");
-                        }
-                    }
-                };
-                return cell;
-            }
-        });
-    }
-
-    private void showSelected(ListView listview, Label label) {
-        if (listview.getSelectionModel().isEmpty()) return;
-        ObservableList<Product> observableList = listview.getSelectionModel().getSelectedItems();
-        Product selectedProduct = observableList.get(0);
-        selectedPossibleTripleComboBox.getItems().clear();
-        setupTupleComboBox();
-        Collections.sort((ArrayList) selectedProduct.getQuantity());
-        for (Object t : ((ArrayList) selectedProduct.getQuantity())) {
-            if (t instanceof Triple)
-                selectedPossibleTripleComboBox.getItems().add((Triple) t);
-
-        }
-        label.setText(createDescriptionOfProduct(selectedProduct));
-
-    }
-
 
     public String createDescriptionOfProduct(Product selectedProduct) {
         StringBuilder stringBuilder = new StringBuilder();
@@ -227,25 +100,150 @@ public class ShopView {
         return stringBuilder.toString();
     }
 
+    private void setBorderPane(){
+        borderPane.setRight(rightVBox);
+        borderPane.setCenter(centerVBox);
+        borderPane.setLeft(leftVBox);
+        borderPane.setTop(topVbox);
+    }
+
+    private void setupBasicViews() {
+        result = new Label("Hello!");
+        result.setTextAlignment(TextAlignment.JUSTIFY);
+        rightVBox = new VBox(10);
+        rightVBox.setPadding(new Insets(5, 10, 5, 10));
+        leftVBox = new VBox(10);
+        leftVBox.setPadding(new Insets(10, 10, 10, 10));
+        leftVBox.setPrefWidth(150);
+        centerVBox = new VBox(10);
+        centerVBox.setPadding(new Insets(10, 10, 10, 10));
+        topVbox = new VBox();
+        topVbox.setPadding(new Insets(0, 10, 0, 10));
+        topVbox.setAlignment(Pos.CENTER);
+        buyButton = new Button("Buy");
+        borderPane = new BorderPane();
+
+        chooseAmountToBuy = new TextField();
+        chooseAmountToBuy.setMaxWidth(50);
+        description = new Label("");
+
+    }
+
+    private void prepareCreateProductButton() {
+        createProductButton = new Button("Create Product");
+        createProductButton.setOnAction(e -> createProduct());
+    }
+
+    private void prepareCreateProductFeature() {
+        prepareCreateProductButton();
+        createProductCategoryComboBox = new ComboBox<Category>();
+        createProductCategoryComboBox.getItems().addAll(Category.values());
+        prepareCreateProductInput();
+        createProductCategoryComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+            Category selectedCategory = createProductCategoryComboBox.getValue();
+            if (oldValue != null) {
+                leftVBox.getChildren().remove(leftVBox.getChildren().size() - 1, leftVBox.getChildren().size());
+            }
+            switch (selectedCategory) {
+                case Shirts:
+                    prepareShirtsCreationViews();
+                    break;
+                case Shoes:
+                    prepareShoesCreationViews();
+                    break;
+                case Trousers:
+                    prepareTrousersCreationViews();
+                    break;
+            }
+        });
+        createProductCategoryComboBox.valueProperty().setValue(Category.Shirts);
+    }
+
+    private ImageView prepareImage() {
+        File file = new File("res/SportShop.png");
+        Image image = new Image(file.toURI().toString());
+        ImageView imageView = new ImageView(image);
+        imageView.fitWidthProperty().setValue(500);
+        imageView.fitHeightProperty().setValue(80);
+        return imageView;
+    }
+
+    private void setupTripleComboBox() {
+        selectedPossibleTripleComboBox.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(Triple triple) {
+                return triple == null ? "" : triple.getStringWithoutAmount();
+            }
+
+            @Override
+            public Triple fromString(String string) {
+                return null;
+            }
+        });
+    }
+
+    private void prepareListView( ) {
+        listOfProducts = new ListView<Product>(controller.getObservableListOfProducts());
+
+        listOfProducts.setCellFactory(new Callback<ListView<Product>, ListCell<Product>>() {
+            @Override
+            public ListCell<Product> call(ListView<Product> p) {
+
+                final ListCell<Product> cell = new ListCell<Product>() {
+
+                    @Override
+                    protected void updateItem(Product t, boolean bln) {
+                        super.updateItem(t, bln);
+
+                        if (t != null) {
+                            setText(t.getName());
+                        } else {
+                            setText("");
+                        }
+                    }
+                };
+                return cell;
+            }
+        });
+        listOfProducts.getSelectionModel().selectFirst();
+    }
+
+    private void makeTextFieldNumeric(TextField textField) {
+        textField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                textField.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        });
+    }
+
+    private void showSelected(ListView listview, Label label) {
+        if (listview.getSelectionModel().isEmpty()) return;
+        ObservableList<Product> observableList = listview.getSelectionModel().getSelectedItems();
+        Product selectedProduct = observableList.get(0);
+        selectedPossibleTripleComboBox.getItems().clear();
+        setupTripleComboBox();
+        Collections.sort((ArrayList) selectedProduct.getQuantity());
+        for (Object t : ((ArrayList) selectedProduct.getQuantity())) {
+            if (t instanceof Triple)
+                selectedPossibleTripleComboBox.getItems().add((Triple) t);
+        }
+        label.setText(createDescriptionOfProduct(selectedProduct));
+    }
 
     private void addGenderSizeQuantity(Product selectedProduct, StringBuilder stringBuilder) {
         if (selectedProduct.getQuantity() instanceof ArrayList<?>) {
             if (((ArrayList) selectedProduct.getQuantity()).get(0) instanceof TripleNumericSize) {
                 ArrayList<TripleNumericSize> quantity = (ArrayList) selectedProduct.getQuantity();
                 Collections.sort(quantity);
-                // selectedPossibleTripleComboBox.getItems().clear();
 
                 for (TripleNumericSize tripleNumericSize : quantity) {
                     stringBuilder.append(tripleNumericSize.getGender());
                     stringBuilder.append(" ");
                     stringBuilder.append(tripleNumericSize.getSize());
                     stringBuilder.append(" ");
-                    stringBuilder.append(tripleNumericSize.getAmmount());
+                    stringBuilder.append(tripleNumericSize.getAmount());
                     stringBuilder.append(" ");
                     stringBuilder.append("\n");
-
-                    //   selectedPossibleTripleComboBox.getItems().add(tripleNumericSize);
-
                 }
             }
             if (((ArrayList) selectedProduct.getQuantity()).get(0) instanceof TripleCharSize) {
@@ -256,43 +254,16 @@ public class ShopView {
                     stringBuilder.append(" ");
                     stringBuilder.append(tripleCharSize.getSize());
                     stringBuilder.append(" ");
-                    stringBuilder.append(tripleCharSize.getAmmount());
+                    stringBuilder.append(tripleCharSize.getAmount());
                     stringBuilder.append(" ");
                     stringBuilder.append("\n");
-
-                    // selectedPossibleTripleComboBox.getItems().add(tripleCharSize);
-
                 }
 
             }
         }
     }
 
-//    private String getStringFromTuple(Triple triple) {
-//        if (triple instanceof TripleNumericSize) {
-//            TripleNumericSize tripleNumericSize = (TripleNumericSize) triple;
-//            return (tripleNumericSize.getGender().toString() + " " + tripleNumericSize.getSize().toString());
-//        }
-//        if (triple instanceof TripleCharSize) {
-//            TripleCharSize tripleCharSize = (TripleCharSize) triple;
-//            String result = tripleCharSize.getGender().toString() + " " + tripleCharSize.getSize().toString();
-//            return (result);
-//        }
-//        return null;
-//    }
-
-    public void refreshListOfProductsAndDescription(ShopController controller) {
-
-        // listView.getSelectionModel().selectFirst();
-        listView.refresh();
-        showSelected(listView, description);
-    }
-
-    public void printResult(String resultOfOperation) {
-        result.setText(resultOfOperation);
-    }
-
-    public void createDetailedDescriptionOfProduct(Product selectedProduct, StringBuilder stringBuilder) {
+    private void createDetailedDescriptionOfProduct(Product selectedProduct, StringBuilder stringBuilder) {
         if (selectedProduct instanceof Shoes) {
 
             stringBuilder.append("Shoe type: ");
@@ -326,7 +297,7 @@ public class ShopView {
         }
     }
 
-    public void prepareCreateProductInput() {
+    private void prepareCreateProductInput() {
 
 
         Label productIDLabel = new Label("ProductID:");
@@ -394,15 +365,47 @@ public class ShopView {
         Object nameObject = leftVBox.getChildren().get(11);
         String priceString = null;
 
-        if (productIdObject instanceof TextField)
-            productID = Integer.parseInt((((TextField) productIdObject).getCharacters()).toString());
+        if (productIdObject instanceof TextField) {
+            String text = (((TextField) productIdObject).getCharacters()).toString();
+            if (text.isEmpty()) {
+                showError("ProductID cannot be empty");
+                return;
+            }
+            try {
+                productID = Integer.parseInt(text);
 
+            } catch (NumberFormatException e) {
+                showError("Product ID is too big");
+            }
+        }
 
-        if (weightObj instanceof TextField)
-            weight = Integer.parseInt((((TextField) weightObj).getCharacters()).toString());
+        if (weightObj instanceof TextField) {
+            String text = (((TextField) weightObj).getCharacters()).toString();
+            if (text.isEmpty()) {
+                showError("Weight cannot be empty");
+                return;
+            }
+            try {
+                weight = Integer.parseInt(text);
 
-        if (barCodeObj instanceof TextField)
-            barCode = Integer.parseInt((((TextField) barCodeObj).getCharacters()).toString());
+            } catch (NumberFormatException e) {
+                showError("Weight is too big");
+            }
+        }
+
+        if (barCodeObj instanceof TextField) {
+            String text = (((TextField) barCodeObj).getCharacters()).toString();
+            if (text.isEmpty()) {
+                showError("Bar code cannot be empty");
+                return;
+            }
+            try {
+                barCode = Integer.parseInt(text);
+
+            } catch (NumberFormatException e) {
+                showError("Bar Code is too big");
+            }
+        }
 
 
         if (priceHBoxObject instanceof HBox) {
@@ -414,12 +417,21 @@ public class ShopView {
             String dec = null;
             if (unitsObj instanceof TextField) {
                 units = ((TextField) unitsObj).getCharacters().toString();
+                if (units.isEmpty()) {
+                    showError("Price cannot be empty");
+                    return;
+                }
             }
             if (decObj instanceof TextField) {
                 dec = ((TextField) decObj).getCharacters().toString();
+                if (dec.isEmpty()) {
+                    showError("Price cannot be empty");
+                    return;
+                }
             }
             priceString = units + "." + dec;
         }
+
         price = new BigDecimal(priceString);
 
         if (nameObject instanceof TextField) {
@@ -437,6 +449,7 @@ public class ShopView {
                 Material mainMaterial = (Material) ((ComboBox) detailedVbox.getChildren().get(3)).getSelectionModel().getSelectedItem();
 
                 quantity = getCharQuantityFromCreation();
+                if (quantity == null) return;
                 ArrayList<TripleCharSize> quantityArrayList = new ArrayList<>();
                 quantityArrayList.add((TripleCharSize) quantity);
                 Shirt createdShirt = new Shirt(productID, weight, barCode, price, name, selectedCategory, quantityArrayList, isThermoactive, mainMaterial);
@@ -448,6 +461,8 @@ public class ShopView {
                 Material mainMaterialshoe = (Material) ((ComboBox) detailedVbox.getChildren().get(3)).getSelectionModel().getSelectedItem();
 
                 quantity = getNumericQuantityFromCreation();
+                if (quantity == null) return;
+
                 ArrayList<TripleNumericSize> quantityShoeArrayList = new ArrayList<>();
                 quantityShoeArrayList.add((TripleNumericSize) quantity);
                 Shoes createdShoes = new Shoes(productID, weight, barCode, price, name, selectedCategory, quantityShoeArrayList, type, mainMaterialshoe);
@@ -458,6 +473,8 @@ public class ShopView {
                 Boolean areRemovableLegs = ((CheckBox) detailedVbox.getChildren().get(1)).isSelected();
 
                 quantity = getCharQuantityFromCreation();
+                if (quantity == null) return;
+
                 ArrayList<TripleCharSize> quantityTrousersArrayList = new ArrayList<>();
                 quantityTrousersArrayList.add((TripleCharSize) quantity);
                 Trousers createdTrousers = new Trousers(productID, weight, barCode, price, name, selectedCategory, quantityTrousersArrayList, areWaterproof, areRemovableLegs);
@@ -476,16 +493,30 @@ public class ShopView {
             Object sizeComboBoxObj = vBox.getChildren().get(5);
             if (sizeComboBoxObj instanceof ComboBox) {
                 size = (Size) ((ComboBox) sizeComboBoxObj).getSelectionModel().getSelectedItem();
+                if (size == null) {
+                    showError("Size cannot be empty");
+                    return null;
+                }
             }
 
             Object genderComboBox = vBox.getChildren().get(7);
             if (genderComboBox instanceof ComboBox) {
                 gender = (Gender) ((ComboBox) genderComboBox).getSelectionModel().getSelectedItem();
-            }
+                if (size == null) {
+                    showError("Gender cannot be empty");
+                    return null;
+                }
 
-            Object ammountObj = vBox.getChildren().get(9);
-            if (ammountObj instanceof TextField) {
-                ammount = Integer.parseInt(((TextField) ammountObj).getCharacters().toString());
+                Object ammountObj = vBox.getChildren().get(9);
+                if (ammountObj instanceof TextField) {
+                    String text = ((TextField) ammountObj).getCharacters().toString();
+                    try {
+                        ammount = Integer.parseInt(text);
+
+                    } catch (NumberFormatException e) {
+                        return null;
+                    }
+                }
             }
         }
         return new TripleCharSize(size, ammount, gender);
@@ -506,16 +537,29 @@ public class ShopView {
             Object genderComboBox = vBox.getChildren().get(7);
             if (genderComboBox instanceof ComboBox) {
                 gender = (Gender) ((ComboBox) genderComboBox).getSelectionModel().getSelectedItem();
-            }
+                if (size == null) {
+                    showError("Gender cannot be empty");
+                    return null;
+                }
 
-            Object ammountObj = vBox.getChildren().get(9);
-            if (ammountObj instanceof TextField) {
-                ammount = Integer.parseInt(((TextField) ammountObj).getCharacters().toString());
+                Object ammountObj = vBox.getChildren().get(9);
+                if (ammountObj instanceof TextField) {
+                    String text = ((TextField) ammountObj).getCharacters().toString();
+                    if (text.isEmpty()) {
+                        showError("Amount cannot be empty");
+                        return null;
+                    }
+                    try {
+                        ammount = Integer.parseInt(text);
+
+                    } catch (NumberFormatException e) {
+                        return null;
+                    }
+                }
             }
         }
         return new TripleNumericSize(size, ammount, gender);
     }
-
 
     private void prepareShirtsCreationViews() {
         Label isThermoactiveLabel = new Label("Is thermoactive:");
@@ -537,6 +581,9 @@ public class ShopView {
 
     }
 
+    private void showError(String errorMessage) {
+        result.setText(errorMessage);
+    }
 
     private void prepareShoesCreationViews() {
         Label shoeTypeLabel = new Label("Type:");
@@ -586,7 +633,7 @@ public class ShopView {
         ComboBox<Gender> genderComboBox = new ComboBox();
         genderComboBox.getItems().addAll(Gender.values());
 
-        Label ammountLabel = new Label("Ammount:");
+        Label ammountLabel = new Label("Amount:");
         TextField ammount = new TextField();
         ammount.setMaxWidth(50);
         makeTextFieldNumeric(ammount);
@@ -611,7 +658,7 @@ public class ShopView {
         ComboBox<Gender> genderComboBox = new ComboBox();
         genderComboBox.getItems().addAll(Gender.values());
 
-        Label ammountLabel = new Label("Ammount:");
+        Label ammountLabel = new Label("Amount:");
         TextField ammount = new TextField();
         ammount.setMaxWidth(50);
         makeTextFieldNumeric(ammount);

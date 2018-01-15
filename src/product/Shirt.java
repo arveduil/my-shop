@@ -18,10 +18,12 @@ public class Shirt extends Product{
         this.quantity = quantity;
         this.mainMaterial = mainMaterial;
     }
+
     @Override
     public ArrayList<TripleCharSize> getQuantity() {
         return quantity;
     }
+
     public Boolean getThermoactive() {
         return isThermoactive;
     }
